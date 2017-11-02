@@ -12,9 +12,38 @@ modified_data<-modified_data[ order(modified_data$CREATED_DATE , decreasing = FA
 
 time_series_data<- ts(modified_data)
 
-library(zoo)
-zoo_data<- zoo(modified_data)
-str(zoo_data)
-frequency(zoo_data)
-date_time<- modified_data$CREATED_DATE
 
+
+
+
+library(astsa)
+#calculating mean
+mean<- mean(modified_data$SPPED_KMPH)
+# plotint the time series
+par(mfrow=c(1,1))
+tsplot(modified_data[,c(1,7)],main="time_series Plot",ylab="Speed KMPH")
+abline(h = mean,lty=2,col="red")
+
+par(mfrow=c(2,1))
+# calculating ACF
+acf(modified_data[,c(1,7)],1000,main="Autocorrelation")
+
+#The Ljung-Box test examines whether there is 
+#significant evidence for non-zero correlations at lags 1-20. 
+#Small p-values (i.e., less than 0.05) suggest that the series
+#is stationary.
+Box.test(modified_data[,7],lag=20,type="Ljung-Box")
+
+#The Augmented Dickey–Fuller (ADF) t-statistic test: 
+#small p-values suggest the data is stationary 
+#and doesn’t need to be differenced stationarity.
+adf.test(modified_data[,7],alternative="stationary")
+
+#The Kwiatkowski-Phillips-Schmidt-Shin (KPSS) test; 
+#here accepting the null hypothesis means that the series 
+#is stationarity, and small p-values suggest that the series
+#is not stationary and a differencing is required.
+kpss.test(modified_data[,7])
+
+# plotting PACF
+pacf(modified_data[,c(1,7)],1000,main="Autocorrelation")
